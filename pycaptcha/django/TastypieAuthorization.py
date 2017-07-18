@@ -1,21 +1,9 @@
 """Django's tastypie authorization based on reCAPTCHA"""
 from logging import getLogger
-from django.conf import settings
 from tastypie.authorization import Authorization
 from tastypie.exceptions import Unauthorized
-from pycaptcha import recaptcha_check
-
-
+from .recaptcha import check as recaptcha_check
 logg = getLogger(__name__)
-
-
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[-1]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
 
 
 class TastypieAuthorization(Authorization):
@@ -44,17 +32,9 @@ class TastypieAuthorization(Authorization):
         This function raise an exception if something's wrong with the reCAPTCHA
         and return normally if everything's right.
         """
-        response = (request.POST.get('response', None)
-                    or request.GET.get('response', None))
-        if not response:
-            logg.debug('response field not set')
-            raise Unauthorized
-        secret = settings.RECAPTCHA_SHARED_SECRET
-        remote_ip = get_client_ip(request)
-        success = recaptcha_check(secret,
-                                  response,
-                                  remote_ip)
-        if not success:
+        if not recaptcha_check(request):
+            logg.info('A robot tried to access a resource (reCAPTCHA fail): %s',
+                      request.get_full_path())
             raise Unauthorized
 
     def read_list(self, object_list, bundle):
