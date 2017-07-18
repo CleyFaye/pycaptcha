@@ -54,6 +54,6 @@ def check(request, response_key='response'):
     response = (request.POST.get(response_key, None)
                 or request.GET.get(response_key, None))
     remote_ip = get_ip(request)
-    return recaptcha_check(settings.RECAPTCHA,
+    return recaptcha_check(settings.RECAPTCHA_SHARED_SECRET,
                            response,
                            remote_ip)
