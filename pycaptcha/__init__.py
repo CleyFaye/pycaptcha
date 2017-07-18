@@ -1,2 +1,2 @@
-"""pycaptcha package"""
-from .recaptcha import check as recaptcha_check
+from .recaptcha import check
+from .recaptcha import check_detailed
