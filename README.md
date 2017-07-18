@@ -8,7 +8,7 @@ It is made to work with Django projects, but that's not a requirement.
 As a standalone
 ---------------
 
-The pycaptcha.recaptcha\_check() function returns the status of the request.
+The pycaptcha.check() function returns the status of the request.
 
 
 With Django
@@ -16,7 +16,7 @@ With Django
 
 There's no need to install a Django application in your project settings.
 
-The pycaptcha.django.recaptcha\_check() is a helper function that will look for the reCAPTCHA shared secret in Django settings (key: RECAPTCHA\_SHARED\_SECRET).
+The pycaptcha.django.check() is a helper function that will look for the reCAPTCHA shared secret in Django settings (key: RECAPTCHA\_SHARED\_SECRET).
 
 The pycaptcha.django.RecaptchaMixin is a View mixin that prevent access to a view except if a reCAPTCHA challenge is successful.
 
