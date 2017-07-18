@@ -1,7 +1,5 @@
-#!/usr/bin/env python
-# encoding=utf-8
+#!/usr/bin/env python3
 import os
-from codecs import open as open_codecs
 from setuptools import setup
 
 
@@ -13,15 +11,13 @@ def read(fname,
     -----
     This is used for the long_description.
     """
-    return open_codecs(os.path.join(os.path.dirname(__file__),
-                                    fname),
-                       'r',
-                       'utf-8',
-                       ).read()
+    return open(os.path.join(os.path.dirname(__file__),
+                             fname),
+                'r').read()
 
 
 setup(name="pycaptcha",
-      version="0.1.1",
+      version="0.2.0",
       author="Gabriel Paul 'Cley Faye' Risterucci",
       author_email="gabriel.risterucci@gmail.com",
       description=("Perform server-side verification of a reCAPTCHA challenge."
