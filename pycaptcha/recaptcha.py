@@ -51,8 +51,9 @@ def check_detailed(secret,
         'success': reply['success'],
         'timestamp': parse_date(reply['challenge_ts']),
         'hostname': reply['hostname'],
-        'error': reply['error-codes'],
     }
+    if 'error-codes' in reply:
+        result['error'] = reply['error-codes']
     return result
 
 
