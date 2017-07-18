@@ -37,6 +37,7 @@ setup(name="pycaptcha",
       python_requires='>=3',
       classifiers=[
           "Development Status :: 4 - Beta",
+          "Framework :: Django",
           "Topic :: Internet :: WWW/HTTP :: Site Management :: Link Checking",
           "License :: OSI Approved :: MIT License",
       ],
