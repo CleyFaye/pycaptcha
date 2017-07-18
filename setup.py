@@ -21,7 +21,7 @@ def read(fname,
 
 
 setup(name="pycaptcha",
-      version="0.0.1",
+      version="0.1.0",
       author="Gabriel Paul 'Cley Faye' Risterucci",
       author_email="gabriel.risterucci@gmail.com",
       description=("Perform server-side verification of a reCAPTCHA challenge."
