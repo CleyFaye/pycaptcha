@@ -2,7 +2,7 @@
 from logging import getLogger
 from tastypie.authorization import Authorization
 from tastypie.exceptions import Unauthorized
-from .recaptcha import check as recaptcha_check
+from .recaptcha import check
 logg = getLogger(__name__)
 
 
@@ -14,9 +14,8 @@ class TastypieAuthorization(Authorization):
     -----
     This class expect to find the user token in the 'response' field (from
     either GET or POST).
-    It also assume that API key and shared secret are set correctly in the
-    project configuration (respectively in RECAPTCHA_API_KEY and
-    RECAPTCHA_SHARED_SECRET). It actually only use the secret at this point.
+    It also assume that the shared secret is set correctly in the project
+    configuration (in RECAPTCHA_SHARED_SECRET).
     """
     def check_permissions(self, request):
         """Check if the reCAPTCHA was successful.
@@ -32,7 +31,7 @@ class TastypieAuthorization(Authorization):
         This function raise an exception if something's wrong with the reCAPTCHA
         and return normally if everything's right.
         """
-        if not recaptcha_check(request):
+        if not check(request):
             logg.info('A robot tried to access a resource (reCAPTCHA fail): %s',
                       request.get_full_path())
             raise Unauthorized

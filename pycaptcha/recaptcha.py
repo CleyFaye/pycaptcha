@@ -1,12 +1,21 @@
 """Perform a reCAPTCHA verification server-side"""
 import requests
+try:
+    from dateutil.parser import parse as parse_date
+except ImportError:
+    from datetime import datetime
+
+    def parse_date(datestr):
+        """Parse a date from ISO format yyyy-MM-dd'T'HH:mm:ssZZ"""
+        return datetime.strptime('%Y-%m-%dT%H:%M:%S%z')
 
 DEFAULT_RECAPTCHA_CHECK_URL = 'https://www.google.com/recaptcha/api/siteverify'
 
-response_info = {}
 
-
-def check(secret, response, remote_ip=None, custom_check_url=None):
+def check_detailed(secret,
+                   response,
+                   remote_ip=None,
+                   check_url=DEFAULT_RECAPTCHA_CHECK_URL):
     """Check if a given user token come from a successful reCAPTCHA challenge.
 
     Parameters
@@ -17,60 +26,66 @@ def check(secret, response, remote_ip=None, custom_check_url=None):
         The token provided by the user after completion of the challenge
     remote_ip : string (optional)
         The IP address of the client
-    custom_check_url : string (optional)
+    check_url : string (optional)
         The URL to use to perform the check. Default to Google reCAPTCHA service
 
 
     Returns
     -------
-    boolean, details
-        The status of the challenge. True indicate success, False indicate
-        failure.
+    dict
+        The status of the challenge. It contains at least the following
+        properties:
+
+        - success (bool)
+        - timestamp (datetime): timestamp of the challenge
+        - hostname (str): hostname where the reCAPTCHA was solved
+        - error (list(str)): a list of errors (see reCAPTCHA API for details)
     """
-    check_url = custom_check_url or DEFAULT_RECAPTCHA_CHECK_URL
     check_data = {
         'secret': secret,
         'response': response}
     if remote_ip:
         check_data['remoteip'] = remote_ip
     reply = requests.post(check_url, check_data).json()
-    global response_info
-    response_info[response] = reply
-    return reply['success']
+    result = {
+        'success': reply['success'],
+        'timestamp': parse_date(reply['challenge_ts']),
+        'hostname': reply['hostname'],
+        'error': reply['error-codes'],
+    }
+    return result
 
 
-def get_details(response):
-    """Return the details of a response check.
+def check(secret,
+          response,
+          remote_ip=None,
+          check_url=DEFAULT_RECAPTCHA_CHECK_URL):
+    """Check if a given user token come from a successful reCAPTCHA challenge.
 
     Parameters
     ----------
+    secret : string
+        The shared secret between the site and reCAPTCHA
     response : string
-        The response code from the user.
+        The token provided by the user after completion of the challenge
+    remote_ip : string (optional)
+        The IP address of the client
+    check_url : string (optional)
+        The URL to use to perform the check. Default to Google reCAPTCHA service
 
 
     Returns
     -------
-    dict
-        A JSON object with the following fields:
-
-        - success
-        - challenge_ts
-        - hostname
-        - error-codes
-
-        Check with the reCAPTCHA API for more details.
+    bool
+        The status of the challenge. True indicate success, False indicate
+        failure.
 
 
     Notes
     -----
-    This function can only be called after check().
-    Calling this function will remove the entry from the internal cache, so it
-    can't be called again with the same response without calling check() again.
-
-    This is not thread safe, and there are possible race conditions if multiple
-    threads calls check() and get_details().
+    This is a convenience function that calls check_detailed().
     """
-    global response_info
-    result = response_info[response]
-    del response_info[response]
-    return result
+    return check_detailed(secret,
+                          response,
+                          remote_ip,
+                          check_url)['success']

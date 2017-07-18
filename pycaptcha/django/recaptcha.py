@@ -1,6 +1,6 @@
 """reCAPTCHA server-side check configured with Django"""
 from django.conf import settings
-from pycaptcha import recaptcha_check
+from pycaptcha import check as base_check
 try:
     from ipware.ip import get_ip
 except ImportError:
@@ -54,6 +54,6 @@ def check(request, response_key='response'):
     response = (request.POST.get(response_key, None)
                 or request.GET.get(response_key, None))
     remote_ip = get_ip(request)
-    return recaptcha_check(settings.RECAPTCHA_SHARED_SECRET,
-                           response,
-                           remote_ip)
+    return base_check(settings.RECAPTCHA_SHARED_SECRET,
+                      response,
+                      remote_ip)

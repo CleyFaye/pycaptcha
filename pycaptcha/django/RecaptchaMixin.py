@@ -61,13 +61,11 @@ class RecaptchaMixin(View):
         """
         if not self.__class__.DURATION:
             return False
-        duration = self.__class__.DURATION
-        key = self._session_key()
-        checkup_date = request.session.get(key, None)
+        checkup_date = request.session.get(self._session_key(), None)
         if checkup_date is None:
             return False
         now = datetime.now().timestamp()
-        expire = checkup_date + duration
+        expire = checkup_date + self.__class__.DURATION
         return expire >= now
 
     def _update_session(self, request):
@@ -80,6 +78,7 @@ class RecaptchaMixin(View):
         request.session[self._session_key()] = datetime.now().timestamp()
 
     def dispatch(self, request, *args, **kwargs):
+        """Check the reCAPTCHA challenge before handling the request"""
         session_pass = self._check_session(request)
         if not session_pass:
             give_access = check(request)
