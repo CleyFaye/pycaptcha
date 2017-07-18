@@ -14,10 +14,12 @@ The pycaptcha.recaptcha\_check() function returns the status of the request.
 With Django
 -----------
 
+There's no need to install a Django application in your project settings.
+
 The pycaptcha.django.recaptcha\_check() is a helper function that will look for the reCAPTCHA shared secret in Django settings (key: RECAPTCHA\_SHARED\_SECRET).
 
 The pycaptcha.django.RecaptchaMixin is a View mixin that prevent access to a view except if a reCAPTCHA challenge is successful.
 
 The pycaptcha.django.TastypieAuthorization is a class designed to work with tastypie, and prevent all access to a resource except for the requested authorization, if a reCAPTCHA challenge was successfully done.
 
-For both the view mixin and the tastypie authorization class, the challenge values are looked into both the GET and the POST of the request under the following names: RECAPTCHA\_RESPONSE.
+For both the view mixin and the tastypie authorization class, the challenge values are looked into both the GET and the POST of the request under the following names: "response".
